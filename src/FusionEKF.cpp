@@ -50,7 +50,7 @@ FusionEKF::~FusionEKF() {}
 
 void FusionEKF::ProcessMeasurement(const MeasurementPackage &measurement_pack) {
 
-
+  cout << "Check01" << endl;
   /*****************************************************************************
    *  Initialization
    ****************************************************************************/
@@ -64,6 +64,7 @@ void FusionEKF::ProcessMeasurement(const MeasurementPackage &measurement_pack) {
     // first measurement
     cout << "EKF: " << endl;
     ekf_.x_ = VectorXd(4);
+    ekf_.Q_ = MatrixXd(4, 4);
 
     //state covariance matrix P
     ekf_.P_ = MatrixXd(4, 4);
@@ -88,8 +89,8 @@ void FusionEKF::ProcessMeasurement(const MeasurementPackage &measurement_pack) {
       float phi = measurement_pack.raw_measurements_[1];
 
       ekf_.x_ << rho*cos(phi), rho*sin(phi), 0, 0;
-      Hj << tools.CalculateJacobian(ekf_.x_);
-      ekf_.H_ = Hj;
+      Hj_ = tools.CalculateJacobian(ekf_.x_);
+      ekf_.H_ = Hj_;
       ekf_.R_ = R_radar_;
       previous_timestamp_ = measurement_pack.timestamp_;
 
@@ -135,7 +136,6 @@ void FusionEKF::ProcessMeasurement(const MeasurementPackage &measurement_pack) {
   ekf_.F_(1, 3) = dt;
 
   //set the process covariance matrix Q
-  ekf_.Q_ = MatrixXd(4, 4);
   ekf_.Q_ <<  dt_4/4*noise_ax, 0, dt_3/2*noise_ax, 0,
               0, dt_4/4*noise_ay, 0, dt_3/2*noise_ay,
               dt_3/2*noise_ax, 0, dt_2*noise_ax, 0,

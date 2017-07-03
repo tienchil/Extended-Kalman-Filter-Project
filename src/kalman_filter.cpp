@@ -3,6 +3,7 @@
 using Eigen::MatrixXd;
 using Eigen::VectorXd;
 
+
 KalmanFilter::KalmanFilter() {}
 
 KalmanFilter::~KalmanFilter() {}
@@ -58,11 +59,11 @@ void KalmanFilter::UpdateEKF(const VectorXd &z) {
   */
 
   // For radar
-  VectorXd z_pred = H_;
+  VectorXd z_pred = H_ * x_;
   VectorXd y = z - z_pred;
 
-  // Normalize phi
-  y[1] = atan2(y[1]);
+  // // Normalize phi
+  // y[1] = atan2(y[1], y[1]+2.0*M_PI);
 
   MatrixXd Ht = H_.transpose();
   MatrixXd S = H_ * P_ * Ht + R_;
